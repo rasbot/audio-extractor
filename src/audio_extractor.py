@@ -4,7 +4,7 @@ import moviepy.editor as mp
 
 """Look...a module docstring..."""
 
-class AudioExtract:
+class AudioExtractor:
     """Args: vid_path, audio_path"""
 
     def __init__(self, vid_path, audio_path, mp3_tag_d):
