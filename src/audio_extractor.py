@@ -15,13 +15,22 @@ class AudioExtractor:
         self.file_names = [f for f in os.listdir(vid_path) if os.path.isfile(os.path.join(vid_path, f))]
 
     def get_clip(self, vid_file):
-        """Returns the clip of a video file
-        args: vid_file (str): video file name and ext in vid_path
-        return: video clip object"""
+        """Returns the clip of a video file.
+
+        Args:
+            vid_file (str): Video file name and ext in vid_path
+
+        Returns:
+            obj: Video clip object
+        """
         return mp.VideoFileClip(r"{}/{}".format(self.vid_path, vid_file))
 
     def get_mp3(self):
-        """Gets audiofile object from path/name"""
+        """Get audiofile object from path/name
+
+        Returns:
+            obj: Audiofile object
+        """
         return eyed3.load(self.audio_path + "/" + self.audio_name + ".mp3")
 
     def tag_mp3(self):
@@ -46,11 +55,13 @@ class AudioExtractor:
                 print(e)
 
     def extract_audio(self, vid_file, audio_name=None):
-        """Extracts audio of a single file as an mp3 into the audio path folder
-        args: vid_file (str): video file name and ext in vid_path
-              audio_name (str): (optional) if passed, will override the audio name
-              which is the same as the video name
-        return: None"""
+        """Extracts audio of a single file as an mp3 into the audio path folder.
+
+        Args:
+            vid_file (str): Video file name and ext in vid_path
+            audio_name (str): (optional) If passed, will override the audio name which
+                        is the same as the video name. Defaults to None.
+        """
         self.audio_name = audio_name
         try:
             if audio_name is None:
