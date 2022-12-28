@@ -1,91 +1,90 @@
 import os
-import eyed3
+from typing import List, Tuple
+import argparse
 import moviepy.editor as mp
 
-"""Look...a module docstring..."""
+
+def get_file_strings(file_path: str, full_path=False) -> Tuple[str, str]:
+    """Split file path name into name / file extension.
+
+    Args:
+        file_path (str): Path to file.
+        full_path (bool, optional): True if the full path
+            will be used for the file name return string.
+            Defaults to False.
+
+    Returns:
+        Tuple[str, str]: File name string and image
+            extension string.
+    """
+
+    file_strings = file_path.rsplit(".", 1)
+    file_name = file_strings[0]
+    if not full_path:
+        file_name = file_name.replace("\\", "/")
+        file_name = file_name.rsplit("/", 1)[-1]
+    file_ext = file_strings[-1]
+    return file_name, file_ext
+
 
 class AudioExtractor:
     """Args: vid_path, audio_path"""
 
-    def __init__(self, vid_path, audio_path, mp3_tag_d):
-        self.vid_path = vid_path
-        self.audio_path = audio_path
-        self.audio_name = None
-        self.mp3_tag_d = mp3_tag_d
-        self.file_names = [f for f in os.listdir(vid_path) if os.path.isfile(os.path.join(vid_path, f))]
-
-    def get_clip(self, vid_file):
-        """Returns the clip of a video file.
+    def __init__(self, vid_path: str, audio_name: str=None) -> None:
+        """Init method for the `AudioExtractor` class.
 
         Args:
-            vid_file (str): Video file name and ext in vid_path
+            vid_path (str): Path to video file.
+            audio_name (str): String used to name audio file. If None, the name
+                of the video file will be used. Defaults to None.
+
+        Raises:
+            AttributeError: If the file_path is not a file, raise exception.
+        """
+
+        if not os.path.isfile(vid_path):
+            raise AttributeError(f"{vid_path} does not point to a valid file!")
+        self.vid_path = vid_path
+        if not audio_name:
+            self.audio_name, _ = get_file_strings(self.vid_path)
+        else:
+            self.audio_name = audio_name
+        self.audio_dir = "./data/extracted_audio"
+
+    def get_clip(self):
+        """Returns the clip of a video file.
 
         Returns:
-            obj: Video clip object
+            VideoClipFile: Video Clip File object.
         """
-        return mp.VideoFileClip(r"{}/{}".format(self.vid_path, vid_file))
+        #TODO: fix return type in docstring
+        return mp.VideoFileClip(self.vid_path)
 
-    def get_mp3(self):
-        """Get audiofile object from path/name
 
-        Returns:
-            obj: Audiofile object
-        """
-        return eyed3.load(self.audio_path + "/" + self.audio_name + ".mp3")
-
-    def tag_mp3(self):
-        """Tags an audiofile with values of dictionary with 'album' or 'artist'
-           keys and updates the audiofile title with self.audio_name"""
-        audiofile = self.get_mp3()
-        k = self.mp3_tag_d.keys()
-        if 'album' in k:
-            audiofile.tag.album = self.mp3_tag_d['album']
-        if 'artist' in k:
-            audiofile.tag.artist = self.mp3_tag_d['artist']
-        audiofile.tag.title = self.audio_name
-        audiofile.tag.save(version=eyed3.id3.ID3_V2_3)
-
-    def tag_all_mp3(self):
-        """For all files in folder, tag them"""
-        for file in self.file_names:
-            try:
-                self.audio_name = file[:-4]
-                self.tag_mp3()
-            except Exception as e:
-                print(e)
-
-    def extract_audio(self, vid_file, audio_name=None):
+    def extract_audio(self):
         """Extracts audio of a single file as an mp3 into the audio path folder.
 
         Args:
-            vid_file (str): Video file name and ext in vid_path
+            vid_file (str): Video file name and ext in vids_path
             audio_name (str): (optional) If passed, will override the audio name which
                         is the same as the video name. Defaults to None.
         """
-        self.audio_name = audio_name
-        try:
-            if audio_name is None:
-                self.audio_name = vid_file[:-4]
-            clip = self.get_clip(vid_file)
-            if not os.path.exists(self.audio_path):
-                os.mkdir(self.audio_path)
-            print("Extracting audio...")
-            clip.audio.write_audiofile(r"{}/{}.mp3".format(self.audio_path, self.audio_name))
-            print("Finished extracting audio!")
-        except Exception as e:
-            print(e)
+        clip = self.get_clip()
+        if not os.path.exists(self.audio_dir):
+            os.mkdir(self.audio_dir)
+        print(f"\nExtracting audio for {self.audio_name}...\n")
+        clip.audio.write_audiofile(f"{self.audio_dir}/{self.audio_name}.mp3")
+        print("\nFinished extracting audio!\n")
 
-    def extract_all_audio(self):
-        """Extracts audio from all video files in vid_path and writes them to audio_path
-        args: None
-        returns: None"""
-        for file in self.file_names:
-            try:
-                self.extract_audio(file)
-            except Exception as e:
-                print(e)
 
-    def extract_and_tag(self):
-        """Extract and tag all files"""
-        self.extract_all_audio()
-        self.tag_all_mp3()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--vid_path",
+        type=str,
+        default=None,
+        help="File path to video file that will have audio extracted from."
+    )
+    args = parser.parse_args()
+    ae = AudioExtractor(args.vid_path)
+    ae.extract_audio()
