@@ -1,5 +1,5 @@
 import os
-from typing import List, Tuple
+from typing import Tuple
 import argparse
 import moviepy.editor as mp
 
@@ -30,7 +30,7 @@ def get_file_strings(file_path: str, full_path=False) -> Tuple[str, str]:
 class AudioExtractor:
     """Args: vid_path, audio_path"""
 
-    def __init__(self, vid_path: str, audio_name: str=None) -> None:
+    def __init__(self, vid_path: str, audio_name: str = None) -> None:
         """Init method for the `AudioExtractor` class.
 
         Args:
@@ -41,7 +41,6 @@ class AudioExtractor:
         Raises:
             AttributeError: If the file_path is not a file, raise exception.
         """
-
         if not os.path.isfile(vid_path):
             raise AttributeError(f"{vid_path} does not point to a valid file!")
         self.vid_path = vid_path
@@ -51,15 +50,13 @@ class AudioExtractor:
             self.audio_name = audio_name
         self.audio_dir = "./data/extracted_audio"
 
-    def get_clip(self):
+    def get_clip(self) -> mp.VideoFileClip:
         """Returns the clip of a video file.
 
         Returns:
-            VideoClipFile: Video Clip File object.
+            mp.VideoFileClip: Video file clip object.
         """
-        #TODO: fix return type in docstring
         return mp.VideoFileClip(self.vid_path)
-
 
     def extract_audio(self):
         """Extracts audio of a single file as an mp3 into the audio path folder.
@@ -77,13 +74,13 @@ class AudioExtractor:
         print("\nFinished extracting audio!\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--vid_path",
         type=str,
         default=None,
-        help="File path to video file that will have audio extracted from."
+        help="File path to video file that will have audio extracted from.",
     )
     args = parser.parse_args()
     ae = AudioExtractor(args.vid_path)
