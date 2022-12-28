@@ -1,5 +1,4 @@
-import os
-from typing import Tuple, List, Callable
+from typing import Tuple, List
 
 
 def get_file_strings(file_path: str, full_path=False) -> Tuple[str, str]:
@@ -25,7 +24,7 @@ def get_file_strings(file_path: str, full_path=False) -> Tuple[str, str]:
     return file_name, file_ext
 
 
-def is_valid_ext(file_path:str, ext_list: List[str]) -> bool:
+def is_valid_ext(file_path: str, ext_list: List[str]) -> bool:
     """Check if file has a valid extension.
 
     Args:

@@ -3,32 +3,13 @@ from typing import Tuple
 import argparse
 import moviepy.editor as mp
 
-
-def get_file_strings(file_path: str, full_path=False) -> Tuple[str, str]:
-    """Split file path name into name / file extension.
-
-    Args:
-        file_path (str): Path to file.
-        full_path (bool, optional): True if the full path
-            will be used for the file name return string.
-            Defaults to False.
-
-    Returns:
-        Tuple[str, str]: File name string and image
-            extension string.
-    """
-
-    file_strings = file_path.rsplit(".", 1)
-    file_name = file_strings[0]
-    if not full_path:
-        file_name = file_name.replace("\\", "/")
-        file_name = file_name.rsplit("/", 1)[-1]
-    file_ext = file_strings[-1]
-    return file_name, file_ext
+from utils import get_file_strings
 
 
 class AudioExtractor:
-    """Args: vid_path, audio_path"""
+    """AudioExtractor class to process a video file and extract audio
+    to mp3 format.
+    """
 
     def __init__(self, vid_path: str, audio_name: str = None) -> None:
         """Init method for the `AudioExtractor` class.
@@ -41,6 +22,7 @@ class AudioExtractor:
         Raises:
             AttributeError: If the file_path is not a file, raise exception.
         """
+
         if not os.path.isfile(vid_path):
             raise AttributeError(f"{vid_path} does not point to a valid file!")
         self.vid_path = vid_path
@@ -58,7 +40,7 @@ class AudioExtractor:
         """
         return mp.VideoFileClip(self.vid_path)
 
-    def extract_audio(self):
+    def process_file(self):
         """Extracts audio of a single file as an mp3 into the audio path folder.
 
         Args:
@@ -84,4 +66,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     ae = AudioExtractor(args.vid_path)
-    ae.extract_audio()
+    ae.process_file()

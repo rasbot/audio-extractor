@@ -1,2 +1,9 @@
-VID_EXTS = ["mp4", "avi", "mov", "mkv", ]
-AUDIO_EXTS = ["mp3", ]
+VID_EXTS = [
+    "mp4",
+    "avi",
+    "mov",
+    "mkv",
+]
+AUDIO_EXTS = [
+    "mp3",
+]
