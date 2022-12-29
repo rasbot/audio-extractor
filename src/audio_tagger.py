@@ -3,9 +3,10 @@ import argparse
 import eyed3
 
 from utils import get_file_strings
+from process_class import ProcessClass
 
 
-class AudioTagger:
+class AudioTagger(ProcessClass):
     """AudioTagger class to tag mp3 files.
     """
     def __init__(

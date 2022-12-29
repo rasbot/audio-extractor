@@ -4,9 +4,10 @@ import argparse
 import moviepy.editor as mp
 
 from utils import get_file_strings
+from process_class import ProcessClass
 
 
-class AudioExtractor:
+class AudioExtractor(ProcessClass):
     """AudioExtractor class to process a video file and extract audio
     to mp3 format.
     """

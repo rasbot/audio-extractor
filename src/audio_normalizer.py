@@ -3,13 +3,14 @@ import argparse
 from pydub import AudioSegment
 
 from utils import get_file_strings
+from process_class import ProcessClass
 
 
 class FileNotSupported(Exception):
     """Exception to throw if file is not a supported extension."""
 
 
-class AudioNormalizer:
+class AudioNormalizer(ProcessClass):
     """AudioNormalizer class to normalize audio of mp3 file."""
 
     def __init__(self, audio_path: str, target_dbfs: int) -> None:
