@@ -7,8 +7,8 @@ from process_class import ProcessClass
 
 
 class AudioTagger(ProcessClass):
-    """AudioTagger class to tag mp3 files.
-    """
+    """AudioTagger class to tag mp3 files."""
+
     def __init__(
         self,
         sound_file_path: str,
@@ -43,8 +43,10 @@ class AudioTagger(ProcessClass):
         """Loads mp3 file and tags it with album/artist/title tags.
         Saves mp3 file with tags.
         """
-        print(f"\nTagging {self.title_tag}...\n")
+        print(f"Tagging {self.title_tag}...")
         self.get_mp3()
+        if self.mp3_file.tag is None:
+            self.mp3_file.initTag()
         self.mp3_file.tag.album = self.album_tag
         self.mp3_file.tag.artist = self.artist_tag
         self.mp3_file.tag.title = self.title_tag
