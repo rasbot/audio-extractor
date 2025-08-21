@@ -1,5 +1,4 @@
 import os
-from typing import Tuple
 import argparse
 import moviepy.editor as mp
 
