@@ -35,8 +35,7 @@ class AudioNormalizer(ProcessClass):
             raise FileNotSupported(
                 f"{self.audio_ext} files are not supported! Use mp3 for now!"
             )
-        if not os.path.exists(self.normalized_dir):
-            os.mkdir(self.normalized_dir)
+        os.makedirs(self.normalized_dir, exist_ok=True)
         print(f"Normalizing {self.audio_name}...")
         sound = AudioSegment.from_mp3(self.audio_path)
         audio_diff = self.target_dbfs - sound.dBFS

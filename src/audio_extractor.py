@@ -49,8 +49,7 @@ class AudioExtractor(ProcessClass):
                         is the same as the video name. Defaults to None.
         """
         clip = self.get_clip()
-        if not os.path.exists(self.audio_dir):
-            os.mkdir(self.audio_dir)
+        os.makedirs(self.audio_dir, exist_ok=True)
         print(f"\nExtracting audio for {self.audio_name}...\n")
         clip.audio.write_audiofile(f"{self.audio_dir}/{self.audio_name}.mp3")
         print("\nFinished extracting audio!\n")
