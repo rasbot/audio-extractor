@@ -1,7 +1,7 @@
 import os
 import argparse
 from typing import List, Callable
-from constants import VID_EXTS, AUDIO_EXTS
+from constants import VID_EXTS, AUDIO_EXTS, EXTRACTED_DIR, NORMALIZED_DIR
 from utils import is_valid_ext
 from audio_extractor import AudioExtractor
 from audio_tagger import AudioTagger
@@ -36,34 +36,28 @@ def process_all_files(
         process_class(file_path, **kwargs).process_file()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--dir",
-        type=str,
-        default='./data',
-        help="Directory with files to process."
+        "--dir", type=str, default="./data", help="Directory with files to process."
     )
     parser.add_argument(
         "--extract",
         action="store_true",
-        help="Extract flag - extracts audio from videos in directory."
+        help="Extract flag - extracts audio from videos in directory.",
     )
     parser.add_argument(
         "--normalize",
         action="store_true",
-        help="Normalize flag - normalize audio of files in directory."
+        help="Normalize flag - normalize audio of files in directory.",
     )
     parser.add_argument(
         "--tag",
         action="store_true",
-        help="Tag flag - tag audio from files in directory."
+        help="Tag flag - tag audio from files in directory.",
     )
     parser.add_argument(
-        "--dBFS",
-        type=int,
-        default=-30,
-        help="Target dBFS. Defaults to -30."
+        "--dBFS", type=int, default=-30, help="Target dBFS. Defaults to -30."
     )
     parser.add_argument(
         "--artist",
@@ -82,17 +76,21 @@ if __name__ == '__main__':
         process_all_files(args.dir, VID_EXTS, AudioExtractor)
     if args.normalize:
         if args.extract:
-            audio_dir = './data/extracted_audio'
+            audio_dir = EXTRACTED_DIR
         else:
             audio_dir = args.dir
         process_all_files(audio_dir, AUDIO_EXTS, AudioNormalizer, target_dbfs=args.dBFS)
     if args.tag:
         if args.normalize:
-            audio_dir = './data/normalized_audio'
+            audio_dir = NORMALIZED_DIR
         elif args.extract:
-            audio_dir = './data/extracted_audio'
+            audio_dir = EXTRACTED_DIR
         else:
             audio_dir = args.dir
         process_all_files(
-            audio_dir, AUDIO_EXTS, AudioTagger, artist_tag=args.artist, album_tag=args.album
+            audio_dir,
+            AUDIO_EXTS,
+            AudioTagger,
+            artist_tag=args.artist,
+            album_tag=args.album,
         )
