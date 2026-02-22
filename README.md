@@ -81,6 +81,35 @@ This will process all video files in the `.\data\` directory. You can also pass 
 uv run .\src\files_processor.py --dir ".\some-directory-with-audio-files-in-it" --normalize --tag --artist "Kampfar" --album "KVASS"
 ```
 
+## Project Structure
+
+```
+audio-extractor/
+├── src/
+│   ├── audio_extractor.py           # AudioExtractor class — single-file extraction
+│   ├── audio_normalizer.py          # AudioNormalizer class — single-file normalisation
+│   ├── audio_tagger.py              # AudioTagger class — single-file ID3 tagging
+│   ├── constants.py                 # Shared path and extension constants
+│   ├── extract_audios_from_dir.py   # CLI: batch audio extraction from a directory
+│   ├── files_processor.py           # process_all_files — batch pipeline orchestration
+│   ├── normalize_audios_from_dir.py # CLI: batch normalisation from a directory
+│   ├── process_class.py             # ProcessClass abstract base class
+│   ├── tag_audios_from_dir.py       # CLI: batch tagging from a directory
+│   └── utils.py                     # get_file_strings / is_valid_ext helpers
+├── tests/
+│   ├── conftest.py
+│   ├── test_audio_extractor.py
+│   ├── test_audio_normalizer.py
+│   ├── test_audio_tagger.py
+│   ├── test_files_processor.py
+│   ├── test_process_class.py
+│   └── test_utils.py
+├── pyproject.toml
+├── uv.lock
+├── README.md
+└── CLAUDE.md
+```
+
 ## Development
 
 Install dev dependencies (included automatically with `uv sync`):
