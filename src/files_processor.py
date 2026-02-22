@@ -1,14 +1,15 @@
 """Batch file processing module for running processors across directories."""
 
-import os
 import argparse
-from pathlib import Path
+import os
 from collections.abc import Callable, Collection
-from constants import VID_EXTS, AUDIO_EXTS, EXTRACTED_DIR, NORMALIZED_DIR
-from utils import is_valid_ext
+from pathlib import Path
+
 from audio_extractor import AudioExtractor
-from audio_tagger import AudioTagger
 from audio_normalizer import AudioNormalizer
+from audio_tagger import AudioTagger
+from constants import AUDIO_EXTS, EXTRACTED_DIR, NORMALIZED_DIR, VID_EXTS
+from utils import is_valid_ext
 
 
 def process_all_files(
@@ -24,7 +25,7 @@ def process_all_files(
     """
     file_names = os.listdir(file_dir)
 
-    file_paths = []
+    file_paths: list[str] = []
     for file_name in file_names:
         file_path = os.path.join(file_dir, file_name)
         if os.path.isfile(file_path):
@@ -78,10 +79,7 @@ if __name__ == "__main__":
     if args.extract:
         process_all_files(args.dir, VID_EXTS, AudioExtractor)
     if args.normalize:
-        if args.extract:
-            audio_dir = EXTRACTED_DIR
-        else:
-            audio_dir = args.dir
+        audio_dir = EXTRACTED_DIR if args.extract else args.dir
         process_all_files(audio_dir, AUDIO_EXTS, AudioNormalizer, target_dbfs=args.dBFS)
     if args.tag:
         if args.normalize:

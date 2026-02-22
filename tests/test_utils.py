@@ -1,5 +1,5 @@
-from utils import get_file_strings, is_valid_ext
 from constants import VID_EXTS
+from utils import get_file_strings, is_valid_ext
 
 
 class TestGetFileStrings:

@@ -1,6 +1,7 @@
-import pytest
 import eyed3
 import eyed3.id3
+import pytest
+
 from audio_tagger import AudioTagger
 
 
@@ -22,7 +23,9 @@ class TestAudioTaggerInit:
         assert at.title_tag == "my_track"
 
     def test_stores_custom_title_tag(self):
-        at = AudioTagger("/some/path/track.mp3", "Artist", "Album", title_tag="Custom Title")
+        at = AudioTagger(
+            "/some/path/track.mp3", "Artist", "Album", title_tag="Custom Title"
+        )
         assert at.title_tag == "Custom Title"
 
     def test_mp3_file_is_none_before_get_mp3(self):
@@ -80,7 +83,9 @@ class TestAudioTaggerProcessFile:
 
     def test_process_file_sets_title(self, mocker):
         mock_mp3 = self._make_mock_mp3(mocker)
-        at = AudioTagger("/some/path/track.mp3", "Artist", "Album", title_tag="My Title")
+        at = AudioTagger(
+            "/some/path/track.mp3", "Artist", "Album", title_tag="My Title"
+        )
         at.process_file()
 
         assert mock_mp3.tag.title == "My Title"

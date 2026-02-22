@@ -1,13 +1,13 @@
 """Audio extraction module for converting video files to mp3 format."""
 
-import os
 import argparse
 from pathlib import Path
+
 from moviepy import VideoFileClip
 
-from utils import get_file_strings
-from process_class import ProcessClass
 from constants import EXTRACTED_DIR
+from process_class import ProcessClass
+from utils import get_file_strings
 
 
 class AudioExtractor(ProcessClass):
@@ -24,7 +24,7 @@ class AudioExtractor(ProcessClass):
         Raises:
             FileNotFoundError: If vid_path does not point to a valid file.
         """
-        if not os.path.isfile(vid_path):
+        if not Path(vid_path).is_file():
             raise FileNotFoundError(f"{vid_path} does not point to a valid file!")
         self.vid_path = vid_path
         if not audio_name:
@@ -50,10 +50,8 @@ class AudioExtractor(ProcessClass):
         clip = self.get_clip()
         try:
             if clip.audio is None:
-                raise ValueError(
-                    f"Video file {self.vid_path!r} has no audio track."
-                )
-            os.makedirs(self.audio_dir, exist_ok=True)
+                raise ValueError(f"Video file {self.vid_path!r} has no audio track.")
+            self.audio_dir.mkdir(parents=True, exist_ok=True)
             print(f"\nExtracting audio for {self.audio_name}...\n")
             clip.audio.write_audiofile(self.audio_dir / f"{self.audio_name}.mp3")
             print("\nFinished extracting audio!\n")

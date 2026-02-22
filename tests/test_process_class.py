@@ -1,4 +1,5 @@
 import pytest
+
 from process_class import ProcessClass
 
 

@@ -1,4 +1,5 @@
 import os
+
 from files_processor import process_all_files
 
 
@@ -24,9 +25,7 @@ class TestProcessAllFiles:
         assert mock_process_class.call_count == 2
 
     def test_skips_non_file_entries(self, mocker):
-        mocker.patch(
-            "files_processor.os.listdir", return_value=["subdir", "video.mp4"]
-        )
+        mocker.patch("files_processor.os.listdir", return_value=["subdir", "video.mp4"])
 
         def isfile_side_effect(path):
             return not path.endswith("subdir")

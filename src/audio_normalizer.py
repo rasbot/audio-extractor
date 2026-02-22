@@ -1,16 +1,16 @@
 """Audio normalization module for adjusting mp3 volume levels."""
 
-import os
 import argparse
 from pathlib import Path
+
 from pydub import AudioSegment
 
-from utils import get_file_strings
-from process_class import ProcessClass
 from constants import NORMALIZED_DIR
+from process_class import ProcessClass
+from utils import get_file_strings
 
 
-class FileNotSupported(Exception):
+class FileNotSupportedError(Exception):
     """Raised when a file with an unsupported extension is processed."""
 
 
@@ -33,13 +33,13 @@ class AudioNormalizer(ProcessClass):
         """Normalize the audio file to the target dBFS level and export it.
 
         Raises:
-            FileNotSupported: If the file is not an mp3.
+            FileNotSupportedError: If the file is not an mp3.
         """
         if self.audio_ext != "mp3":
-            raise FileNotSupported(
+            raise FileNotSupportedError(
                 f"{self.audio_ext} files are not supported! Use mp3 for now!"
             )
-        os.makedirs(self.normalized_dir, exist_ok=True)
+        self.normalized_dir.mkdir(parents=True, exist_ok=True)
         print(f"Normalizing {self.audio_name}...")
         sound = AudioSegment.from_mp3(self.audio_path)
         audio_diff = self.target_dbfs - sound.dBFS

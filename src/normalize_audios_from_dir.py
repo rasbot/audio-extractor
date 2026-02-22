@@ -1,9 +1,11 @@
-import os
+"""CLI entry point for batch audio normalization from a directory of mp3 files."""
+
 import argparse
+import os
+
+from audio_normalizer import AudioNormalizer
 from constants import AUDIO_EXTS
 from files_processor import process_all_files
-from audio_normalizer import AudioNormalizer
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

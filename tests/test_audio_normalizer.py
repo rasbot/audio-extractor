@@ -1,6 +1,9 @@
+from pathlib import Path
+
 import pytest
+
+from audio_normalizer import AudioNormalizer, FileNotSupportedError
 from constants import NORMALIZED_DIR
-from audio_normalizer import AudioNormalizer, FileNotSupported
 
 
 class TestAudioNormalizerInit:
@@ -28,11 +31,11 @@ class TestAudioNormalizerInit:
 class TestAudioNormalizerProcessFile:
     def test_raises_file_not_supported_for_non_mp3(self):
         an = AudioNormalizer("/some/path/audio.wav", target_dbfs=-20.0)
-        with pytest.raises(FileNotSupported):
+        with pytest.raises(FileNotSupportedError):
             an.process_file()
 
     def test_creates_output_directory(self, mocker):
-        mock_makedirs = mocker.patch("audio_normalizer.os.makedirs")
+        mock_mkdir = mocker.patch.object(Path, "mkdir")
         mock_sound = mocker.MagicMock()
         mock_sound.dBFS = -40.0
         mocker.patch("audio_normalizer.AudioSegment.from_mp3", return_value=mock_sound)
@@ -40,10 +43,10 @@ class TestAudioNormalizerProcessFile:
         an = AudioNormalizer("/some/path/audio.mp3", target_dbfs=-20.0)
         an.process_file()
 
-        mock_makedirs.assert_called_once_with(an.normalized_dir, exist_ok=True)
+        mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
 
     def test_computes_correct_gain_delta(self, mocker):
-        mocker.patch("audio_normalizer.os.makedirs")
+        mocker.patch.object(Path, "mkdir")
         mock_sound = mocker.MagicMock()
         mock_sound.dBFS = -40.0
         mocker.patch("audio_normalizer.AudioSegment.from_mp3", return_value=mock_sound)
@@ -54,7 +57,7 @@ class TestAudioNormalizerProcessFile:
         mock_sound.apply_gain.assert_called_once_with(20.0)
 
     def test_exports_to_correct_path(self, mocker):
-        mocker.patch("audio_normalizer.os.makedirs")
+        mocker.patch.object(Path, "mkdir")
         mock_sound = mocker.MagicMock()
         mock_sound.dBFS = -40.0
         mock_normalized = mocker.MagicMock()
@@ -68,7 +71,7 @@ class TestAudioNormalizerProcessFile:
         mock_normalized.export.assert_called_once_with(expected_path)
 
     def test_loads_from_correct_audio_path(self, mocker):
-        mocker.patch("audio_normalizer.os.makedirs")
+        mocker.patch.object(Path, "mkdir")
         mock_sound = mocker.MagicMock()
         mock_sound.dBFS = -30.0
         mock_from_mp3 = mocker.patch(

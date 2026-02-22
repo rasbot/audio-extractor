@@ -1,9 +1,11 @@
-import os
+"""CLI entry point for batch audio extraction from a directory of video files."""
+
 import argparse
+import os
+
+from audio_extractor import AudioExtractor
 from constants import VID_EXTS
 from files_processor import process_all_files
-from audio_extractor import AudioExtractor
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

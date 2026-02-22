@@ -1,9 +1,11 @@
-import os
+"""CLI entry point for batch mp3 tagging from a directory of audio files."""
+
 import argparse
+import os
+
+from audio_tagger import AudioTagger
 from constants import AUDIO_EXTS
 from files_processor import process_all_files
-from audio_tagger import AudioTagger
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
