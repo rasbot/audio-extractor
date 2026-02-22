@@ -94,11 +94,12 @@ class TestAudioExtractorProcessFile:
         mock_clip.close.assert_called_once()
 
     def test_process_file_raises_when_no_audio_track(self, mock_clip_env):
-        mock_clip, _ = mock_clip_env
+        mock_clip, mock_makedirs = mock_clip_env
         mock_clip.audio = None
         ae = AudioExtractor("/some/path/my_video.mp4")
 
         with pytest.raises(ValueError, match="no audio track"):
             ae.process_file()
 
+        mock_makedirs.assert_not_called()
         mock_clip.close.assert_called_once()

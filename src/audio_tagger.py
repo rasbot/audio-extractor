@@ -56,6 +56,7 @@ class AudioTagger(ProcessClass):
         """
         print(f"Tagging {self.title_tag}...")
         self.get_mp3()
+        assert self.mp3_file is not None
         if self.mp3_file.tag is None:
             self.mp3_file.initTag()
         self.mp3_file.tag.album = self.album_tag

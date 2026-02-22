@@ -50,12 +50,12 @@ class AudioExtractor(ProcessClass):
         """
         clip = self.get_clip()
         try:
-            os.makedirs(self.audio_dir, exist_ok=True)
-            print(f"\nExtracting audio for {self.audio_name}...\n")
             if clip.audio is None:
                 raise ValueError(
                     f"Video file {self.vid_path!r} has no audio track."
                 )
+            os.makedirs(self.audio_dir, exist_ok=True)
+            print(f"\nExtracting audio for {self.audio_name}...\n")
             clip.audio.write_audiofile(self.audio_dir / f"{self.audio_name}.mp3")
             print("\nFinished extracting audio!\n")
         finally:
