@@ -1,6 +1,6 @@
 # Audio Extractor
 
-Scripts in this repo can take a video file and extract the audio from the file to an mp3. The mp3 file can be normalized so the volume of the file is consistant. Ex: You have a handful of videos and extract the audio, they can all be normalized so the louder audio is less loud, and the quieter audio is less quiet. The mp3 files can also be tagged with the album, artist, and title so programs playing the files can use the tags to sort the files correctly.
+Scripts in this repo can take a video file and extract the audio from the file to an mp3. The mp3 file can be normalized so the volume of the file is consistent. Ex: You have a handful of videos and extract the audio, they can all be normalized so the louder audio is less loud, and the quieter audio is less quiet. The mp3 files can also be tagged with the album, artist, and title so programs playing the files can use the tags to sort the files correctly.
 
 ## Prerequisites
 You will need to have `ffmpeg` installed on your computer. Setup uses uv, so please install that as well.
@@ -14,6 +14,12 @@ git clone https://github.com/rasbot/audio-extractor.git
 ```bash
 uv sync
 ```
+
+## Supported Formats
+
+**Video input:** `mp4`, `avi`, `mov`, `mkv`
+
+**Audio output/input:** `mp3`
 
 ## Usage
 The scripts and their usage will be described below.
@@ -35,7 +41,7 @@ uv run .\src\extract_audios_from_dir.py --dir ".\some-directory-with-video-files
 The resulting mp3 files will be in the `.\data\extracted_audio` directory in the repo directory.
 
 ### Audio Normalization
-mp3 files can be normalized, which can be useful if the video file is too loud or too quiet. The default value is -30 dBFS, and a less negative number will result in a louder file (-10 dBFS is louder than -20 dBFS).
+mp3 files can be normalized, which can be useful if the video file is too loud or too quiet. The default value is -30 dBFS, and a less negative number will result in a louder file (-10 dBFS is louder than -20 dBFS). Float values are accepted (e.g. `-14.5`).
 
 #### Individual file
 ```bash
@@ -73,4 +79,21 @@ uv run .\src\files_processor.py --extract --normalize --tag --artist "Taake" --a
 This will process all video files in the `.\data\` directory. You can also pass a `--dir` flag to specify a directory. Subsets of these functions can be called as well. If you wanted to normalize and tag files you can use
 ```bash
 uv run .\src\files_processor.py --dir ".\some-directory-with-audio-files-in-it" --normalize --tag --artist "Kampfar" --album "KVASS"
+```
+
+## Development
+
+Install dev dependencies (included automatically with `uv sync`):
+```bash
+uv sync
+```
+
+Run the test suite:
+```bash
+uv run pytest
+```
+
+Run with verbose output to see all test names:
+```bash
+uv run pytest -v
 ```
