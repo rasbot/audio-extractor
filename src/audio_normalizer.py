@@ -4,6 +4,7 @@ from pydub import AudioSegment
 
 from utils import get_file_strings
 from process_class import ProcessClass
+from constants import NORMALIZED_DIR
 
 
 class FileNotSupported(Exception):
@@ -13,17 +14,17 @@ class FileNotSupported(Exception):
 class AudioNormalizer(ProcessClass):
     """AudioNormalizer class to normalize audio of mp3 file."""
 
-    def __init__(self, audio_path: str, target_dbfs: int) -> None:
+    def __init__(self, audio_path: str, target_dbfs: float) -> None:
         """Init method for the `AudioNormalizer` class.
 
         Args:
             audio_path (str): Path to audio file.
-            target_dbfs (int): Decibels relative to full scale target value.
+            target_dbfs (float): Decibels relative to full scale target value.
         """
         self.audio_path = audio_path
         self.target_dbfs = target_dbfs
         self.audio_name, self.audio_ext = get_file_strings(self.audio_path)
-        self.normalized_dir = "./data/normalized_audio"
+        self.normalized_dir = str(NORMALIZED_DIR)
 
     def process_file(self):
         """Normalize audio of an mp3 file based on a target dBFS value.

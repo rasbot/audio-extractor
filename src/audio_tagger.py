@@ -1,6 +1,7 @@
 import argparse
 
 import eyed3
+import eyed3.id3
 
 from utils import get_file_strings
 from process_class import ProcessClass

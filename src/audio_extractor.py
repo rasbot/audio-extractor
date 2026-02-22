@@ -1,9 +1,10 @@
 import os
 import argparse
-import moviepy.editor as mp
+from moviepy import VideoFileClip
 
 from utils import get_file_strings
 from process_class import ProcessClass
+from constants import EXTRACTED_DIR
 
 
 class AudioExtractor(ProcessClass):
@@ -30,15 +31,15 @@ class AudioExtractor(ProcessClass):
             self.audio_name, _ = get_file_strings(self.vid_path)
         else:
             self.audio_name = audio_name
-        self.audio_dir = "./data/extracted_audio"
+        self.audio_dir = str(EXTRACTED_DIR)
 
-    def get_clip(self) -> mp.VideoFileClip:
+    def get_clip(self) -> VideoFileClip:
         """Returns the clip of a video file.
 
         Returns:
-            mp.VideoFileClip: Video file clip object.
+            VideoFileClip: Video file clip object.
         """
-        return mp.VideoFileClip(self.vid_path)
+        return VideoFileClip(self.vid_path)
 
     def process_file(self):
         """Extracts audio of a single file as an mp3 into the audio path folder.
@@ -49,10 +50,13 @@ class AudioExtractor(ProcessClass):
                         is the same as the video name. Defaults to None.
         """
         clip = self.get_clip()
-        os.makedirs(self.audio_dir, exist_ok=True)
-        print(f"\nExtracting audio for {self.audio_name}...\n")
-        clip.audio.write_audiofile(f"{self.audio_dir}/{self.audio_name}.mp3")
-        print("\nFinished extracting audio!\n")
+        try:
+            os.makedirs(self.audio_dir, exist_ok=True)
+            print(f"\nExtracting audio for {self.audio_name}...\n")
+            clip.audio.write_audiofile(f"{self.audio_dir}/{self.audio_name}.mp3")
+            print("\nFinished extracting audio!\n")
+        finally:
+            clip.close()
 
 
 if __name__ == "__main__":

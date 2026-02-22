@@ -3,7 +3,7 @@
 Scripts in this repo can take a video file and extract the audio from the file to an mp3. The mp3 file can be normalized so the volume of the file is consistant. Ex: You have a handful of videos and extract the audio, they can all be normalized so the louder audio is less loud, and the quieter audio is less quiet. The mp3 files can also be tagged with the album, artist, and title so programs playing the files can use the tags to sort the files correctly.
 
 ## Prerequisites
-You will need to have `ffmepg` installed on your computer. Setup uses uv, so please install that as well.
+You will need to have `ffmpeg` installed on your computer. Setup uses uv, so please install that as well.
 
 ## Installation
 1. Clone this repo
@@ -39,13 +39,13 @@ mp3 files can be normalized, which can be useful if the video file is too loud o
 
 #### Individual file
 ```bash
-uv run .\src\audio_normalizer.py --audio_path ".\some-directory\audio_file.mp3" --dFBS -20
+uv run .\src\audio_normalizer.py --audio_path ".\some-directory\audio_file.mp3" --dBFS -20
 ```
 The resulting mp3 file will be in the `.\data\normalized_audio` directory in the repo directory.
 
 #### Multiple files in a directory
 ```bash
-uv run .\src\normalize_audios_from_dir.py --dir ".\some-directory-with-audio-files-in-it" --dFBS -20
+uv run .\src\normalize_audios_from_dir.py --dir ".\some-directory-with-audio-files-in-it" --dBFS -20
 ```
 The resulting mp3 file will be in the `.\data\normalized_audio` directory in the repo directory.
 
