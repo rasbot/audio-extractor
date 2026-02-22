@@ -1,4 +1,7 @@
-# /review
+---
+name: tidyup
+description: Run a full project health check - verify coding standards, sync and run tests, update README. Invoke manually with /tidyup.
+---
 
 Run a full project health check: verify coding standards, sync tests with source, run the test suite, and update the README.
 
