@@ -1,9 +1,11 @@
 import os
 import argparse
+from pathlib import Path
 from pydub import AudioSegment
 
 from utils import get_file_strings
 from process_class import ProcessClass
+from constants import NORMALIZED_DIR
 
 
 class FileNotSupported(Exception):
@@ -13,19 +15,19 @@ class FileNotSupported(Exception):
 class AudioNormalizer(ProcessClass):
     """AudioNormalizer class to normalize audio of mp3 file."""
 
-    def __init__(self, audio_path: str, target_dbfs: int) -> None:
+    def __init__(self, audio_path: str, target_dbfs: float) -> None:
         """Init method for the `AudioNormalizer` class.
 
         Args:
             audio_path (str): Path to audio file.
-            target_dbfs (int): Decibels relative to full scale target value.
+            target_dbfs (float): Decibels relative to full scale target value.
         """
         self.audio_path = audio_path
         self.target_dbfs = target_dbfs
         self.audio_name, self.audio_ext = get_file_strings(self.audio_path)
-        self.normalized_dir = "./data/normalized_audio"
+        self.normalized_dir: Path = NORMALIZED_DIR
 
-    def process_file(self):
+    def process_file(self) -> None:
         """Normalize audio of an mp3 file based on a target dBFS value.
 
         Raises:
@@ -41,7 +43,7 @@ class AudioNormalizer(ProcessClass):
         audio_diff = self.target_dbfs - sound.dBFS
         normalized_audio = sound.apply_gain(audio_diff)
         normalized_audio.export(
-            f"{self.normalized_dir}/{self.audio_name}_norm.{self.audio_ext}"
+            self.normalized_dir / f"{self.audio_name}_norm.{self.audio_ext}"
         )
 
 
@@ -51,7 +53,7 @@ if __name__ == "__main__":
         "--audio_path", type=str, default=None, help="Path to audio file to normalize."
     )
     parser.add_argument(
-        "--dBFS", type=int, default=-30, help="Target dBFS. Defaults to -30."
+        "--dBFS", type=float, default=-30, help="Target dBFS. Defaults to -30."
     )
     args = parser.parse_args()
     an = AudioNormalizer(args.audio_path, args.dBFS)

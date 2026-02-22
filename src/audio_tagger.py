@@ -1,6 +1,8 @@
 import argparse
 
 import eyed3
+import eyed3.id3
+import eyed3.mp3
 
 from utils import get_file_strings
 from process_class import ProcessClass
@@ -14,7 +16,7 @@ class AudioTagger(ProcessClass):
         sound_file_path: str,
         artist_tag: str,
         album_tag: str,
-        title_tag: str = None,
+        title_tag: str | None = None,
     ) -> None:
         """Init method for `AudioTagger` class.
 
@@ -22,7 +24,7 @@ class AudioTagger(ProcessClass):
             sound_file_path (str): Path to audio file.
             artist_tag (str): Artist name.
             album_tag (str): Album name.
-            title_tag (str, optional): Title of mp3.
+            title_tag (str | None, optional): Title of mp3.
                 If None, will use the name of the mp3 file.
                 Defaults to None.
         """
@@ -33,11 +35,20 @@ class AudioTagger(ProcessClass):
             self.title_tag, _ = get_file_strings(self.sound_file_path)
         else:
             self.title_tag = title_tag
-        self.mp3_file = None
+        self.mp3_file: eyed3.mp3.Mp3AudioFile | None = None
 
     def get_mp3(self) -> None:
-        """Loads a mp3 file as a eyed3.mp3.Mp3AudioFile object."""
+        """Loads a mp3 file as an eyed3.mp3.Mp3AudioFile object.
+
+        Raises:
+            ValueError: If the file cannot be loaded by eyed3.
+        """
         self.mp3_file = eyed3.load(self.sound_file_path)
+        if self.mp3_file is None:
+            raise ValueError(
+                f"Failed to load MP3 file: {self.sound_file_path!r}. "
+                "The file may be corrupt or is not a valid MP3."
+            )
 
     def process_file(self) -> None:
         """Loads mp3 file and tags it with album/artist/title tags.
@@ -45,6 +56,7 @@ class AudioTagger(ProcessClass):
         """
         print(f"Tagging {self.title_tag}...")
         self.get_mp3()
+        assert self.mp3_file is not None
         if self.mp3_file.tag is None:
             self.mp3_file.initTag()
         self.mp3_file.tag.album = self.album_tag
