@@ -1,7 +1,7 @@
-from typing import Tuple, List
+from collections.abc import Collection
 
 
-def get_file_strings(file_path: str, full_path=False) -> Tuple[str, str]:
+def get_file_strings(file_path: str, full_path: bool = False) -> tuple[str, str]:
     """Split file path name into name / file extension.
 
     Args:
@@ -11,7 +11,7 @@ def get_file_strings(file_path: str, full_path=False) -> Tuple[str, str]:
             Defaults to False.
 
     Returns:
-        Tuple[str, str]: File name string and image
+        tuple[str, str]: File name string and file
             extension string.
     """
 
@@ -24,11 +24,12 @@ def get_file_strings(file_path: str, full_path=False) -> Tuple[str, str]:
     return file_name, file_ext
 
 
-def is_valid_ext(file_path: str, ext_list: List[str]) -> bool:
+def is_valid_ext(file_path: str, ext_list: Collection[str]) -> bool:
     """Check if file has a valid extension.
 
     Args:
         file_path (str): File path (ex: mydir/my_file.txt)
+        ext_list (Collection[str]): Collection of valid extensions to check against.
 
     Returns:
         bool: Bool indicating if the file is a

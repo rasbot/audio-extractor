@@ -1,5 +1,6 @@
 import os
 import argparse
+from pathlib import Path
 from moviepy import VideoFileClip
 
 from utils import get_file_strings
@@ -12,26 +13,26 @@ class AudioExtractor(ProcessClass):
     to mp3 format.
     """
 
-    def __init__(self, vid_path: str, audio_name: str = None) -> None:
+    def __init__(self, vid_path: str, audio_name: str | None = None) -> None:
         """Init method for the `AudioExtractor` class.
 
         Args:
             vid_path (str): Path to video file.
-            audio_name (str): String used to name audio file. If None, the name
+            audio_name (str | None): String used to name audio file. If None, the name
                 of the video file will be used. Defaults to None.
 
         Raises:
-            AttributeError: If the file_path is not a file, raise exception.
+            FileNotFoundError: If the vid_path is not a file, raise exception.
         """
 
         if not os.path.isfile(vid_path):
-            raise AttributeError(f"{vid_path} does not point to a valid file!")
+            raise FileNotFoundError(f"{vid_path} does not point to a valid file!")
         self.vid_path = vid_path
         if not audio_name:
             self.audio_name, _ = get_file_strings(self.vid_path)
         else:
             self.audio_name = audio_name
-        self.audio_dir = str(EXTRACTED_DIR)
+        self.audio_dir: Path = EXTRACTED_DIR
 
     def get_clip(self) -> VideoFileClip:
         """Returns the clip of a video file.
@@ -41,19 +42,21 @@ class AudioExtractor(ProcessClass):
         """
         return VideoFileClip(self.vid_path)
 
-    def process_file(self):
-        """Extracts audio of a single file as an mp3 into the audio path folder.
+    def process_file(self) -> None:
+        """Extracts audio of a single file as an mp3 into the audio directory.
 
-        Args:
-            vid_file (str): Video file name and ext in vids_path
-            audio_name (str): (optional) If passed, will override the audio name which
-                        is the same as the video name. Defaults to None.
+        Raises:
+            ValueError: If the video file has no audio track.
         """
         clip = self.get_clip()
         try:
             os.makedirs(self.audio_dir, exist_ok=True)
             print(f"\nExtracting audio for {self.audio_name}...\n")
-            clip.audio.write_audiofile(f"{self.audio_dir}/{self.audio_name}.mp3")
+            if clip.audio is None:
+                raise ValueError(
+                    f"Video file {self.vid_path!r} has no audio track."
+                )
+            clip.audio.write_audiofile(self.audio_dir / f"{self.audio_name}.mp3")
             print("\nFinished extracting audio!\n")
         finally:
             clip.close()

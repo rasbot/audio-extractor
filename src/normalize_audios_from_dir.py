@@ -14,7 +14,7 @@ if __name__ == "__main__":
         help="Directory containing audio files to normalize.",
     )
     parser.add_argument(
-        "--dBFS", type=int, default=-30, help="Target dBFS. Defaults to -30."
+        "--dBFS", type=float, default=-30, help="Target dBFS. Defaults to -30."
     )
     args = parser.parse_args()
     process_all_files(args.dir, AUDIO_EXTS, AudioNormalizer, target_dbfs=args.dBFS)

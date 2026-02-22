@@ -1,6 +1,7 @@
 import os
 import argparse
-from typing import List, Callable
+from pathlib import Path
+from collections.abc import Callable, Collection
 from constants import VID_EXTS, AUDIO_EXTS, EXTRACTED_DIR, NORMALIZED_DIR
 from utils import is_valid_ext
 from audio_extractor import AudioExtractor
@@ -9,14 +10,14 @@ from audio_normalizer import AudioNormalizer
 
 
 def process_all_files(
-    file_dir: str, ext_list: List[str], process_class: Callable, **kwargs
+    file_dir: str | Path, ext_list: Collection[str], process_class: Callable, **kwargs
 ) -> None:
     """Process all files in specified directory. Will process
     files if they match an extension in the ext_list variable.
 
     Args:
-        file_dir (str): Directory containing files.
-        ext_list (List[str]): List of valid extensions to check against.
+        file_dir (str | Path): Directory containing files.
+        ext_list (Collection[str]): Collection of valid extensions to check against.
         process_class (Callable): Specific processing class to use.
     """
     file_names = os.listdir(file_dir)
@@ -57,7 +58,7 @@ if __name__ == "__main__":
         help="Tag flag - tag audio from files in directory.",
     )
     parser.add_argument(
-        "--dBFS", type=int, default=-30, help="Target dBFS. Defaults to -30."
+        "--dBFS", type=float, default=-30, help="Target dBFS. Defaults to -30."
     )
     parser.add_argument(
         "--artist",

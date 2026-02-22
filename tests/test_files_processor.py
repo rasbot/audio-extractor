@@ -1,5 +1,5 @@
-import pytest
 import os
+from files_processor import process_all_files
 
 
 class TestProcessAllFiles:
@@ -7,7 +7,6 @@ class TestProcessAllFiles:
         mocker.patch("files_processor.os.listdir", return_value=["a.mp4", "b.mp4"])
         mocker.patch("files_processor.os.path.isfile", return_value=True)
         mock_process_class = mocker.MagicMock()
-        from files_processor import process_all_files
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
 
@@ -19,7 +18,6 @@ class TestProcessAllFiles:
         )
         mocker.patch("files_processor.os.path.isfile", return_value=True)
         mock_process_class = mocker.MagicMock()
-        from files_processor import process_all_files
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
 
@@ -35,7 +33,6 @@ class TestProcessAllFiles:
 
         mocker.patch("files_processor.os.path.isfile", side_effect=isfile_side_effect)
         mock_process_class = mocker.MagicMock()
-        from files_processor import process_all_files
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
 
@@ -45,7 +42,6 @@ class TestProcessAllFiles:
         mocker.patch("files_processor.os.listdir", return_value=["video.mp4"])
         mocker.patch("files_processor.os.path.isfile", return_value=True)
         mock_process_class = mocker.MagicMock()
-        from files_processor import process_all_files
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
 
@@ -56,11 +52,8 @@ class TestProcessAllFiles:
         mocker.patch("files_processor.os.listdir", return_value=["audio.mp3"])
         mocker.patch("files_processor.os.path.isfile", return_value=True)
         mock_process_class = mocker.MagicMock()
-        from files_processor import process_all_files
 
-        process_all_files(
-            "/some/dir", ["mp3"], mock_process_class, target_dbfs=-20
-        )
+        process_all_files("/some/dir", ["mp3"], mock_process_class, target_dbfs=-20)
 
         expected_path = os.path.join("/some/dir", "audio.mp3")
         mock_process_class.assert_called_once_with(expected_path, target_dbfs=-20)
@@ -69,7 +62,6 @@ class TestProcessAllFiles:
         mocker.patch("files_processor.os.listdir", return_value=[])
         mocker.patch("files_processor.os.path.isfile", return_value=True)
         mock_process_class = mocker.MagicMock()
-        from files_processor import process_all_files
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
 
@@ -81,7 +73,6 @@ class TestProcessAllFiles:
         )
         mocker.patch("files_processor.os.path.isfile", return_value=True)
         mock_process_class = mocker.MagicMock()
-        from files_processor import process_all_files
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
 

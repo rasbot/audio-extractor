@@ -1,5 +1,6 @@
 import os
 import argparse
+from pathlib import Path
 from pydub import AudioSegment
 
 from utils import get_file_strings
@@ -24,9 +25,9 @@ class AudioNormalizer(ProcessClass):
         self.audio_path = audio_path
         self.target_dbfs = target_dbfs
         self.audio_name, self.audio_ext = get_file_strings(self.audio_path)
-        self.normalized_dir = str(NORMALIZED_DIR)
+        self.normalized_dir: Path = NORMALIZED_DIR
 
-    def process_file(self):
+    def process_file(self) -> None:
         """Normalize audio of an mp3 file based on a target dBFS value.
 
         Raises:
@@ -42,7 +43,7 @@ class AudioNormalizer(ProcessClass):
         audio_diff = self.target_dbfs - sound.dBFS
         normalized_audio = sound.apply_gain(audio_diff)
         normalized_audio.export(
-            f"{self.normalized_dir}/{self.audio_name}_norm.{self.audio_ext}"
+            self.normalized_dir / f"{self.audio_name}_norm.{self.audio_ext}"
         )
 
 
@@ -52,7 +53,7 @@ if __name__ == "__main__":
         "--audio_path", type=str, default=None, help="Path to audio file to normalize."
     )
     parser.add_argument(
-        "--dBFS", type=int, default=-30, help="Target dBFS. Defaults to -30."
+        "--dBFS", type=float, default=-30, help="Target dBFS. Defaults to -30."
     )
     args = parser.parse_args()
     an = AudioNormalizer(args.audio_path, args.dBFS)
