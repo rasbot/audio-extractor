@@ -10,7 +10,7 @@ At the beginning of every session, before doing any work:
 4. If any of the following are missing, **stop and ask the user** before proceeding:
    - `src/` directory for source code
    - `tests/` directory for unit tests
-   - `pyproject.toml` with `[tool.ruff]`, `[tool.pytest]`, and `[project]` sections
+   - `pyproject.toml` with `[tool.ruff]`, `[tool.pytest.ini_options]`, and `[project]` sections
    - `uv` as the package manager (look for `uv.lock` or `[tool.uv]` in `pyproject.toml`)
    - If these are missing, suggest setting them up and offer to help scaffold the structure.
 
@@ -136,7 +136,7 @@ This handles linting, formatting, and import sorting in one tool. Ruff configura
 
 ```toml
 [tool.ruff]
-target-version = "py311"
+target-version = "py313"
 line-length = 88
 
 [tool.ruff.lint]

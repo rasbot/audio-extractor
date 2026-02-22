@@ -1,11 +1,12 @@
+"""Abstract base class defining the interface for all file processors."""
+
 import abc
 
 
 class ProcessClass(abc.ABC):
-    """Enforce the ProcessClasses to have a process_file method.
-    """
+    """Abstract base class enforcing a process_file method on all subclasses."""
+
     @abc.abstractmethod
     def process_file(self) -> None:
-        """Method called to process a file by a ProcessClass.
-        """
+        """Process a file."""
         pass

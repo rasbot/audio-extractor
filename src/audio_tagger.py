@@ -1,3 +1,5 @@
+"""Audio tagging module for writing ID3 tags to mp3 files."""
+
 import argparse
 
 import eyed3
@@ -9,7 +11,7 @@ from process_class import ProcessClass
 
 
 class AudioTagger(ProcessClass):
-    """AudioTagger class to tag mp3 files."""
+    """Tags an mp3 file with album, artist, and title metadata."""
 
     def __init__(
         self,
@@ -18,14 +20,13 @@ class AudioTagger(ProcessClass):
         album_tag: str,
         title_tag: str | None = None,
     ) -> None:
-        """Init method for `AudioTagger` class.
+        """Init method for AudioTagger class.
 
         Args:
-            sound_file_path (str): Path to audio file.
-            artist_tag (str): Artist name.
-            album_tag (str): Album name.
-            title_tag (str | None, optional): Title of mp3.
-                If None, will use the name of the mp3 file.
+            sound_file_path: Path to audio file.
+            artist_tag: Artist name.
+            album_tag: Album name.
+            title_tag: Title of the mp3. If None, the filename is used.
                 Defaults to None.
         """
         self.sound_file_path = sound_file_path
@@ -38,10 +39,10 @@ class AudioTagger(ProcessClass):
         self.mp3_file: eyed3.mp3.Mp3AudioFile | None = None
 
     def get_mp3(self) -> None:
-        """Loads a mp3 file as an eyed3.mp3.Mp3AudioFile object.
+        """Load the mp3 file into self.mp3_file.
 
         Raises:
-            ValueError: If the file cannot be loaded by eyed3.
+            ValueError: If eyed3 cannot load the file (corrupt or not a valid mp3).
         """
         self.mp3_file = eyed3.load(self.sound_file_path)
         if self.mp3_file is None:
@@ -51,9 +52,7 @@ class AudioTagger(ProcessClass):
             )
 
     def process_file(self) -> None:
-        """Loads mp3 file and tags it with album/artist/title tags.
-        Saves mp3 file with tags.
-        """
+        """Load the mp3 and write album, artist, and title tags to it."""
         print(f"Tagging {self.title_tag}...")
         self.get_mp3()
         assert self.mp3_file is not None

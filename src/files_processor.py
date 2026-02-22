@@ -1,3 +1,5 @@
+"""Batch file processing module for running processors across directories."""
+
 import os
 import argparse
 from pathlib import Path
@@ -12,13 +14,13 @@ from audio_normalizer import AudioNormalizer
 def process_all_files(
     file_dir: str | Path, ext_list: Collection[str], process_class: Callable, **kwargs
 ) -> None:
-    """Process all files in specified directory. Will process
-    files if they match an extension in the ext_list variable.
+    """Process all matching files in a directory using the given processor.
 
     Args:
-        file_dir (str | Path): Directory containing files.
-        ext_list (Collection[str]): Collection of valid extensions to check against.
-        process_class (Callable): Specific processing class to use.
+        file_dir: Directory containing files to process.
+        ext_list: Collection of valid file extensions to match against.
+        process_class: Processor class to instantiate and call for each file.
+        **kwargs: Additional keyword arguments forwarded to process_class.
     """
     file_names = os.listdir(file_dir)
 

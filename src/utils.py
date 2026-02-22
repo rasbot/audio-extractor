@@ -1,20 +1,19 @@
+"""Utility functions for file path parsing and extension validation."""
+
 from collections.abc import Collection
 
 
 def get_file_strings(file_path: str, full_path: bool = False) -> tuple[str, str]:
-    """Split file path name into name / file extension.
+    """Split a file path into name and file extension.
 
     Args:
-        file_path (str): Path to file.
-        full_path (bool, optional): True if the full path
-            will be used for the file name return string.
-            Defaults to False.
+        file_path: Path to file.
+        full_path: If True, the full path is used as the file name rather
+            than just the base name. Defaults to False.
 
     Returns:
-        tuple[str, str]: File name string and file
-            extension string.
+        A tuple of (file_name, file_extension).
     """
-
     file_strings = file_path.rsplit(".", 1)
     file_name = file_strings[0]
     if not full_path:
@@ -25,15 +24,14 @@ def get_file_strings(file_path: str, full_path: bool = False) -> tuple[str, str]
 
 
 def is_valid_ext(file_path: str, ext_list: Collection[str]) -> bool:
-    """Check if file has a valid extension.
+    """Check if a file has a valid extension.
 
     Args:
-        file_path (str): File path (ex: mydir/my_file.txt)
-        ext_list (Collection[str]): Collection of valid extensions to check against.
+        file_path: File path (ex: mydir/my_file.txt).
+        ext_list: Collection of valid extensions to check against.
 
     Returns:
-        bool: Bool indicating if the file is a
-            valid file based on the extension.
+        True if the file extension is in ext_list, False otherwise.
     """
     _, file_ext = get_file_strings(file_path)
     return file_ext in ext_list

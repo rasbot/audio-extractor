@@ -1,3 +1,5 @@
+"""Audio extraction module for converting video files to mp3 format."""
+
 import os
 import argparse
 from pathlib import Path
@@ -9,22 +11,19 @@ from constants import EXTRACTED_DIR
 
 
 class AudioExtractor(ProcessClass):
-    """AudioExtractor class to process a video file and extract audio
-    to mp3 format.
-    """
+    """Processes a video file and extracts its audio as an mp3."""
 
     def __init__(self, vid_path: str, audio_name: str | None = None) -> None:
-        """Init method for the `AudioExtractor` class.
+        """Init method for the AudioExtractor class.
 
         Args:
-            vid_path (str): Path to video file.
-            audio_name (str | None): String used to name audio file. If None, the name
-                of the video file will be used. Defaults to None.
+            vid_path: Path to video file.
+            audio_name: Name for the output audio file. If None, the video
+                filename is used. Defaults to None.
 
         Raises:
-            FileNotFoundError: If the vid_path is not a file, raise exception.
+            FileNotFoundError: If vid_path does not point to a valid file.
         """
-
         if not os.path.isfile(vid_path):
             raise FileNotFoundError(f"{vid_path} does not point to a valid file!")
         self.vid_path = vid_path
@@ -35,15 +34,15 @@ class AudioExtractor(ProcessClass):
         self.audio_dir: Path = EXTRACTED_DIR
 
     def get_clip(self) -> VideoFileClip:
-        """Returns the clip of a video file.
+        """Load the video file as a clip.
 
         Returns:
-            VideoFileClip: Video file clip object.
+            The loaded video file clip.
         """
         return VideoFileClip(self.vid_path)
 
     def process_file(self) -> None:
-        """Extracts audio of a single file as an mp3 into the audio directory.
+        """Extract audio from the video file and write it as an mp3.
 
         Raises:
             ValueError: If the video file has no audio track.

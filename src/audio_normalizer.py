@@ -1,3 +1,5 @@
+"""Audio normalization module for adjusting mp3 volume levels."""
+
 import os
 import argparse
 from pathlib import Path
@@ -9,18 +11,18 @@ from constants import NORMALIZED_DIR
 
 
 class FileNotSupported(Exception):
-    """Exception to throw if file is not a supported extension."""
+    """Raised when a file with an unsupported extension is processed."""
 
 
 class AudioNormalizer(ProcessClass):
-    """AudioNormalizer class to normalize audio of mp3 file."""
+    """Normalizes the volume of an mp3 file to a target dBFS level."""
 
     def __init__(self, audio_path: str, target_dbfs: float) -> None:
-        """Init method for the `AudioNormalizer` class.
+        """Init method for the AudioNormalizer class.
 
         Args:
-            audio_path (str): Path to audio file.
-            target_dbfs (float): Decibels relative to full scale target value.
+            audio_path: Path to audio file.
+            target_dbfs: Target volume level in decibels relative to full scale.
         """
         self.audio_path = audio_path
         self.target_dbfs = target_dbfs
@@ -28,10 +30,10 @@ class AudioNormalizer(ProcessClass):
         self.normalized_dir: Path = NORMALIZED_DIR
 
     def process_file(self) -> None:
-        """Normalize audio of an mp3 file based on a target dBFS value.
+        """Normalize the audio file to the target dBFS level and export it.
 
         Raises:
-            FileNotSupported: Throw an exception if the file is not an mp3.
+            FileNotSupported: If the file is not an mp3.
         """
         if self.audio_ext != "mp3":
             raise FileNotSupported(
