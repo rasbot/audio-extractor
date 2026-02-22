@@ -5,9 +5,11 @@ from pathlib import Path
 
 from pydub import AudioSegment
 
-from constants import NORMALIZED_DIR
+from constants import DEFAULT_DBFS, NORMALIZED_DIR
 from process_class import ProcessClass
 from utils import get_file_strings
+
+__all__ = ["AudioNormalizer", "FileNotSupportedError"]
 
 
 class FileNotSupportedError(Exception):
@@ -23,7 +25,12 @@ class AudioNormalizer(ProcessClass):
         Args:
             audio_path: Path to audio file.
             target_dbfs: Target volume level in decibels relative to full scale.
+
+        Raises:
+            FileNotFoundError: If audio_path does not point to a valid file.
         """
+        if not Path(audio_path).is_file():
+            raise FileNotFoundError(f"{audio_path} does not point to a valid file!")
         self.audio_path = audio_path
         self.target_dbfs = target_dbfs
         self.audio_name, self.audio_ext = get_file_strings(self.audio_path)
@@ -52,10 +59,16 @@ class AudioNormalizer(ProcessClass):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--audio_path", type=str, default=None, help="Path to audio file to normalize."
+        "--audio_path",
+        type=str,
+        required=True,
+        help="Path to audio file to normalize.",
     )
     parser.add_argument(
-        "--dBFS", type=float, default=-30, help="Target dBFS. Defaults to -30."
+        "--dBFS",
+        type=float,
+        default=DEFAULT_DBFS,
+        help=f"Target dBFS. Defaults to {DEFAULT_DBFS}.",
     )
     args = parser.parse_args()
     an = AudioNormalizer(args.audio_path, args.dBFS)

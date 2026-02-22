@@ -1,14 +1,25 @@
+"""Tests for the AudioExtractor class and its process_file behaviour."""
+
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
+from pytest_mock import MockerFixture
 
 from audio_extractor import AudioExtractor
 from constants import EXTRACTED_DIR
 
 
 @pytest.fixture
-def mock_clip_env(mocker):
-    """Patch is_file, VideoFileClip, and mkdir for AudioExtractor process_file tests."""
+def mock_clip_env(mocker: MockerFixture) -> tuple[MagicMock, MagicMock]:
+    """Patch is_file, VideoFileClip, and mkdir for AudioExtractor process_file tests.
+
+    Args:
+        mocker: The pytest-mock fixture.
+
+    Returns:
+        A tuple of (mock_clip, mock_mkdir).
+    """
     mocker.patch.object(Path, "is_file", return_value=True)
     mock_clip = mocker.MagicMock()
     mocker.patch("audio_extractor.VideoFileClip", return_value=mock_clip)
@@ -17,32 +28,34 @@ def mock_clip_env(mocker):
 
 
 class TestAudioExtractorInit:
+    """Verifies constructor validation and attribute assignment."""
+
     def test_raises_when_file_not_found(self, mocker):
         mocker.patch.object(Path, "is_file", return_value=False)
 
         with pytest.raises(FileNotFoundError):
             AudioExtractor("/nonexistent/path/video.mp4")
 
-    def test_defaults_audio_name_to_filename(self, mocker):
-        mocker.patch.object(Path, "is_file", return_value=True)
-
+    def test_defaults_audio_name_to_filename(self, mock_path_is_file):
         ae = AudioExtractor("/some/path/my_video.mp4")
         assert ae.audio_name == "my_video"
 
-    def test_stores_custom_audio_name(self, mocker):
-        mocker.patch.object(Path, "is_file", return_value=True)
-
+    def test_stores_custom_audio_name(self, mock_path_is_file):
         ae = AudioExtractor("/some/path/my_video.mp4", audio_name="custom_name")
         assert ae.audio_name == "custom_name"
 
-    def test_audio_dir_uses_extracted_dir_constant(self, mocker):
-        mocker.patch.object(Path, "is_file", return_value=True)
+    def test_audio_name_not_overridden_by_empty_string(self, mock_path_is_file):
+        ae = AudioExtractor("/some/path/my_video.mp4", audio_name="")
+        assert ae.audio_name == ""
 
+    def test_audio_dir_uses_extracted_dir_constant(self, mock_path_is_file):
         ae = AudioExtractor("/some/path/my_video.mp4")
         assert ae.audio_dir == EXTRACTED_DIR
 
 
 class TestAudioExtractorGetClip:
+    """Verifies that get_clip loads the video file via VideoFileClip."""
+
     def test_get_clip_calls_video_file_clip(self, mocker):
         mocker.patch.object(Path, "is_file", return_value=True)
         mock_clip = mocker.MagicMock()
@@ -56,6 +69,8 @@ class TestAudioExtractorGetClip:
 
 
 class TestAudioExtractorProcessFile:
+    """Verifies extraction behaviour, output path construction, and clip cleanup."""
+
     def test_process_file_calls_mkdir_with_parents_and_exist_ok(self, mock_clip_env):
         mock_clip, mock_mkdir = mock_clip_env
         ae = AudioExtractor("/some/path/my_video.mp4")

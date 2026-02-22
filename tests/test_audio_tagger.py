@@ -1,11 +1,18 @@
+"""Tests for the AudioTagger class and its process_file behaviour."""
+
+from unittest.mock import MagicMock
+
 import eyed3
 import eyed3.id3
 import pytest
+from pytest_mock import MockerFixture
 
 from audio_tagger import AudioTagger
 
 
 class TestAudioTaggerInit:
+    """Verifies constructor attribute assignment and title defaulting logic."""
+
     def test_stores_sound_file_path(self):
         at = AudioTagger("/some/path/track.mp3", "Artist", "Album")
         assert at.sound_file_path == "/some/path/track.mp3"
@@ -28,12 +35,18 @@ class TestAudioTaggerInit:
         )
         assert at.title_tag == "Custom Title"
 
+    def test_title_not_overridden_by_empty_string(self):
+        at = AudioTagger("/some/path/track.mp3", "Artist", "Album", title_tag="")
+        assert at.title_tag == ""
+
     def test_mp3_file_is_none_before_get_mp3(self):
         at = AudioTagger("/some/path/track.mp3", "Artist", "Album")
         assert at.mp3_file is None
 
 
 class TestAudioTaggerGetMp3:
+    """Verifies that get_mp3 loads the mp3 and raises on failure."""
+
     def test_get_mp3_calls_eyed3_load(self, mocker):
         mock_mp3 = mocker.MagicMock()
         mock_load = mocker.patch("audio_tagger.eyed3.load", return_value=mock_mp3)
@@ -53,7 +66,11 @@ class TestAudioTaggerGetMp3:
 
 
 class TestAudioTaggerProcessFile:
-    def _make_mock_mp3(self, mocker, tag=None):
+    """Verifies tag writing, initTag handling, and ID3 version selection."""
+
+    def _make_mock_mp3(
+        self, mocker: MockerFixture, tag: MagicMock | None = None
+    ) -> MagicMock:
         mock_mp3 = mocker.MagicMock()
         mock_mp3.tag = tag if tag is not None else mocker.MagicMock()
         mocker.patch("audio_tagger.eyed3.load", return_value=mock_mp3)

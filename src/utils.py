@@ -1,9 +1,12 @@
 """Utility functions for file path parsing and extension validation."""
 
 from collections.abc import Collection
+from pathlib import Path
+
+__all__ = ["get_file_strings", "is_valid_ext"]
 
 
-def get_file_strings(file_path: str, full_path: bool = False) -> tuple[str, str]:
+def get_file_strings(file_path: str | Path, full_path: bool = False) -> tuple[str, str]:
     """Split a file path into name and file extension.
 
     Args:
@@ -12,18 +15,24 @@ def get_file_strings(file_path: str, full_path: bool = False) -> tuple[str, str]
             than just the base name. Defaults to False.
 
     Returns:
-        A tuple of (file_name, file_extension).
+        A tuple of (file_name, file_extension). If the path has no extension,
+        file_extension is an empty string.
     """
-    file_strings = file_path.rsplit(".", 1)
-    file_name = file_strings[0]
+    path_str = str(file_path)
+    parts = path_str.rsplit(".", 1)
+    if len(parts) == 1:
+        file_name = parts[0]
+        if not full_path:
+            file_name = file_name.replace("\\", "/").rsplit("/", 1)[-1]
+        return file_name, ""
+    file_name = parts[0]
     if not full_path:
-        file_name = file_name.replace("\\", "/")
-        file_name = file_name.rsplit("/", 1)[-1]
-    file_ext = file_strings[-1]
+        file_name = file_name.replace("\\", "/").rsplit("/", 1)[-1]
+    file_ext = parts[1]
     return file_name, file_ext
 
 
-def is_valid_ext(file_path: str, ext_list: Collection[str]) -> bool:
+def is_valid_ext(file_path: str | Path, ext_list: Collection[str]) -> bool:
     """Check if a file has a valid extension.
 
     Args:

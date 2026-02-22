@@ -9,6 +9,8 @@ from constants import EXTRACTED_DIR
 from process_class import ProcessClass
 from utils import get_file_strings
 
+__all__ = ["AudioExtractor"]
+
 
 class AudioExtractor(ProcessClass):
     """Processes a video file and extracts its audio as an mp3."""
@@ -27,7 +29,7 @@ class AudioExtractor(ProcessClass):
         if not Path(vid_path).is_file():
             raise FileNotFoundError(f"{vid_path} does not point to a valid file!")
         self.vid_path = vid_path
-        if not audio_name:
+        if audio_name is None:
             self.audio_name, _ = get_file_strings(self.vid_path)
         else:
             self.audio_name = audio_name
@@ -64,7 +66,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--vid_path",
         type=str,
-        default=None,
+        required=True,
         help="File path to video file that will have audio extracted from.",
     )
     args = parser.parse_args()

@@ -1,10 +1,10 @@
 """CLI entry point for batch mp3 tagging from a directory of audio files."""
 
 import argparse
-import os
+from pathlib import Path
 
 from audio_tagger import AudioTagger
-from constants import AUDIO_EXTS
+from constants import AUDIO_EXTS, DEFAULT_ALBUM, DEFAULT_ARTIST
 from files_processor import process_all_files
 
 if __name__ == "__main__":
@@ -12,20 +12,20 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dir",
         type=str,
-        default=os.getcwd(),
+        default=str(Path.cwd()),
         help="Directory containing audio files to tag.",
     )
     parser.add_argument(
         "--artist",
         type=str,
-        default="default artist",
-        help="artist tag for mp3 file - Defaults to 'default artist'.",
+        default=DEFAULT_ARTIST,
+        help=f"artist tag for mp3 file - Defaults to {DEFAULT_ARTIST!r}.",
     )
     parser.add_argument(
         "--album",
         type=str,
-        default="default album",
-        help="album tag for mp3 file - Defaults to 'default album'.",
+        default=DEFAULT_ALBUM,
+        help=f"album tag for mp3 file - Defaults to {DEFAULT_ALBUM!r}.",
     )
     args = parser.parse_args()
     process_all_files(

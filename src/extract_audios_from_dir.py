@@ -1,7 +1,7 @@
 """CLI entry point for batch audio extraction from a directory of video files."""
 
 import argparse
-import os
+from pathlib import Path
 
 from audio_extractor import AudioExtractor
 from constants import VID_EXTS
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dir",
         type=str,
-        default=os.getcwd(),
+        default=str(Path.cwd()),
         help="Directory containing video files to extract audio from.",
     )
     args = parser.parse_args()

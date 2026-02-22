@@ -3,11 +3,14 @@
 import argparse
 
 import eyed3
+import eyed3.core
 import eyed3.id3
-import eyed3.mp3
 
+from constants import DEFAULT_ALBUM, DEFAULT_ARTIST
 from process_class import ProcessClass
 from utils import get_file_strings
+
+__all__ = ["AudioTagger"]
 
 
 class AudioTagger(ProcessClass):
@@ -32,11 +35,11 @@ class AudioTagger(ProcessClass):
         self.sound_file_path = sound_file_path
         self.artist_tag = artist_tag
         self.album_tag = album_tag
-        if not title_tag:
+        if title_tag is None:
             self.title_tag, _ = get_file_strings(self.sound_file_path)
         else:
             self.title_tag = title_tag
-        self.mp3_file: eyed3.mp3.Mp3AudioFile | None = None
+        self.mp3_file: eyed3.core.AudioFile | None = None
 
     def get_mp3(self) -> None:
         """Load the mp3 file into self.mp3_file.
@@ -55,31 +58,37 @@ class AudioTagger(ProcessClass):
         """Load the mp3 and write album, artist, and title tags to it."""
         print(f"Tagging {self.title_tag}...")
         self.get_mp3()
-        assert self.mp3_file is not None
+        if self.mp3_file is None:
+            raise RuntimeError(
+                "mp3_file is None after get_mp3(); this indicates a bug in get_mp3."
+            )
         if self.mp3_file.tag is None:
             self.mp3_file.initTag()
         self.mp3_file.tag.album = self.album_tag
         self.mp3_file.tag.artist = self.artist_tag
         self.mp3_file.tag.title = self.title_tag
-        self.mp3_file.tag.save(version=eyed3.id3.ID3_V2_3)
+        self.mp3_file.tag.save(version=eyed3.id3.ID3_V2_3)  # type: ignore[attr-defined]
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--audio_path", type=str, default=None, help="Path to audio file to tag"
+        "--audio_path",
+        type=str,
+        required=True,
+        help="Path to audio file to tag",
     )
     parser.add_argument(
         "--artist",
         type=str,
-        default="default artist",
-        help="artist tag for mp3 file - Defaults to 'default artist'.",
+        default=DEFAULT_ARTIST,
+        help=f"artist tag for mp3 file - Defaults to {DEFAULT_ARTIST!r}.",
     )
     parser.add_argument(
         "--album",
         type=str,
-        default="default album",
-        help="album tag for mp3 file - Defaults to 'default album'.",
+        default=DEFAULT_ALBUM,
+        help=f"album tag for mp3 file - Defaults to {DEFAULT_ALBUM!r}.",
     )
     parser.add_argument(
         "--title",

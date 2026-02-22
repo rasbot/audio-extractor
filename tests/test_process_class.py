@@ -1,9 +1,13 @@
+"""Tests for the ProcessClass abstract base class enforcement."""
+
 import pytest
 
 from process_class import ProcessClass
 
 
 class TestProcessClass:
+    """Verifies that ProcessClass enforces the process_file contract on subclasses."""
+
     def test_cannot_instantiate_abstract_class(self):
         with pytest.raises(TypeError):
             ProcessClass()

@@ -1,19 +1,32 @@
 """Batch file processing module for running processors across directories."""
 
 import argparse
-import os
 from collections.abc import Callable, Collection
 from pathlib import Path
+from typing import Any
 
 from audio_extractor import AudioExtractor
 from audio_normalizer import AudioNormalizer
 from audio_tagger import AudioTagger
-from constants import AUDIO_EXTS, EXTRACTED_DIR, NORMALIZED_DIR, VID_EXTS
+from constants import (
+    AUDIO_EXTS,
+    DEFAULT_ALBUM,
+    DEFAULT_ARTIST,
+    DEFAULT_DBFS,
+    EXTRACTED_DIR,
+    NORMALIZED_DIR,
+    VID_EXTS,
+)
 from utils import is_valid_ext
+
+__all__ = ["process_all_files"]
 
 
 def process_all_files(
-    file_dir: str | Path, ext_list: Collection[str], process_class: Callable, **kwargs
+    file_dir: str | Path,
+    ext_list: Collection[str],
+    process_class: Callable[..., Any],
+    **kwargs: Any,
 ) -> None:
     """Process all matching files in a directory using the given processor.
 
@@ -23,18 +36,11 @@ def process_all_files(
         process_class: Processor class to instantiate and call for each file.
         **kwargs: Additional keyword arguments forwarded to process_class.
     """
-    file_names = os.listdir(file_dir)
-
+    dir_path = Path(file_dir)
     file_paths: list[str] = []
-    for file_name in file_names:
-        file_path = os.path.join(file_dir, file_name)
-        if os.path.isfile(file_path):
-            if is_valid_ext(file_path, ext_list):
-                file_paths.append(file_path)
-            else:
-                print(
-                    f"{file_path} might not be a video file, not processing it for now."
-                )
+    for entry in dir_path.iterdir():
+        if entry.is_file() and is_valid_ext(str(entry), ext_list):
+            file_paths.append(str(entry))
 
     for file_path in file_paths:
         process_class(file_path, **kwargs).process_file()
@@ -61,19 +67,22 @@ if __name__ == "__main__":
         help="Tag flag - tag audio from files in directory.",
     )
     parser.add_argument(
-        "--dBFS", type=float, default=-30, help="Target dBFS. Defaults to -30."
+        "--dBFS",
+        type=float,
+        default=DEFAULT_DBFS,
+        help=f"Target dBFS. Defaults to {DEFAULT_DBFS}.",
     )
     parser.add_argument(
         "--artist",
         type=str,
-        default="default artist",
-        help="artist tag for mp3 file - Defaults to 'default artist'.",
+        default=DEFAULT_ARTIST,
+        help=f"artist tag for mp3 file - Defaults to {DEFAULT_ARTIST!r}.",
     )
     parser.add_argument(
         "--album",
         type=str,
-        default="default album",
-        help="album tag for mp3 file - Defaults to 'default album'.",
+        default=DEFAULT_ALBUM,
+        help=f"album tag for mp3 file - Defaults to {DEFAULT_ALBUM!r}.",
     )
     args = parser.parse_args()
     if args.extract:

@@ -1,12 +1,34 @@
-import os
+"""Tests for the process_all_files batch processing function."""
+
+from pathlib import Path
 
 from files_processor import process_all_files
 
 
+class _FakeEntry:
+    """Minimal stand-in for a pathlib.Path entry returned by Path.iterdir()."""
+
+    def __init__(self, path_str: str, is_file_val: bool = True) -> None:
+        self._path_str = path_str
+        self._is_file_val = is_file_val
+
+    def is_file(self) -> bool:
+        """Return whether this entry represents a file."""
+        return self._is_file_val
+
+    def __str__(self) -> str:
+        return self._path_str
+
+
 class TestProcessAllFiles:
+    """Verifies directory traversal, extension filtering, and processor dispatch."""
+
     def test_calls_process_class_for_each_valid_file(self, mocker):
-        mocker.patch("files_processor.os.listdir", return_value=["a.mp4", "b.mp4"])
-        mocker.patch("files_processor.os.path.isfile", return_value=True)
+        entries = [
+            _FakeEntry("/some/dir/a.mp4"),
+            _FakeEntry("/some/dir/b.mp4"),
+        ]
+        mocker.patch.object(Path, "iterdir", return_value=entries)
         mock_process_class = mocker.MagicMock()
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
@@ -14,10 +36,12 @@ class TestProcessAllFiles:
         assert mock_process_class.call_count == 2
 
     def test_skips_invalid_extensions(self, mocker):
-        mocker.patch(
-            "files_processor.os.listdir", return_value=["a.mp4", "b.txt", "c.mp4"]
-        )
-        mocker.patch("files_processor.os.path.isfile", return_value=True)
+        entries = [
+            _FakeEntry("/some/dir/a.mp4"),
+            _FakeEntry("/some/dir/b.txt"),
+            _FakeEntry("/some/dir/c.mp4"),
+        ]
+        mocker.patch.object(Path, "iterdir", return_value=entries)
         mock_process_class = mocker.MagicMock()
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
@@ -25,12 +49,11 @@ class TestProcessAllFiles:
         assert mock_process_class.call_count == 2
 
     def test_skips_non_file_entries(self, mocker):
-        mocker.patch("files_processor.os.listdir", return_value=["subdir", "video.mp4"])
-
-        def isfile_side_effect(path):
-            return not path.endswith("subdir")
-
-        mocker.patch("files_processor.os.path.isfile", side_effect=isfile_side_effect)
+        entries = [
+            _FakeEntry("/some/dir/subdir", is_file_val=False),
+            _FakeEntry("/some/dir/video.mp4"),
+        ]
+        mocker.patch.object(Path, "iterdir", return_value=entries)
         mock_process_class = mocker.MagicMock()
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
@@ -38,28 +61,27 @@ class TestProcessAllFiles:
         assert mock_process_class.call_count == 1
 
     def test_passes_correct_file_path(self, mocker):
-        mocker.patch("files_processor.os.listdir", return_value=["video.mp4"])
-        mocker.patch("files_processor.os.path.isfile", return_value=True)
+        entries = [_FakeEntry("/some/dir/video.mp4")]
+        mocker.patch.object(Path, "iterdir", return_value=entries)
         mock_process_class = mocker.MagicMock()
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
 
-        expected_path = os.path.join("/some/dir", "video.mp4")
-        mock_process_class.assert_called_once_with(expected_path)
+        mock_process_class.assert_called_once_with("/some/dir/video.mp4")
 
     def test_passes_kwargs_to_process_class(self, mocker):
-        mocker.patch("files_processor.os.listdir", return_value=["audio.mp3"])
-        mocker.patch("files_processor.os.path.isfile", return_value=True)
+        entries = [_FakeEntry("/some/dir/audio.mp3")]
+        mocker.patch.object(Path, "iterdir", return_value=entries)
         mock_process_class = mocker.MagicMock()
 
         process_all_files("/some/dir", ["mp3"], mock_process_class, target_dbfs=-20)
 
-        expected_path = os.path.join("/some/dir", "audio.mp3")
-        mock_process_class.assert_called_once_with(expected_path, target_dbfs=-20)
+        mock_process_class.assert_called_once_with(
+            "/some/dir/audio.mp3", target_dbfs=-20
+        )
 
     def test_handles_empty_directory(self, mocker):
-        mocker.patch("files_processor.os.listdir", return_value=[])
-        mocker.patch("files_processor.os.path.isfile", return_value=True)
+        mocker.patch.object(Path, "iterdir", return_value=[])
         mock_process_class = mocker.MagicMock()
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
@@ -67,10 +89,11 @@ class TestProcessAllFiles:
         mock_process_class.assert_not_called()
 
     def test_handles_dir_with_no_valid_extensions(self, mocker):
-        mocker.patch(
-            "files_processor.os.listdir", return_value=["doc.pdf", "image.jpg"]
-        )
-        mocker.patch("files_processor.os.path.isfile", return_value=True)
+        entries = [
+            _FakeEntry("/some/dir/doc.pdf"),
+            _FakeEntry("/some/dir/image.jpg"),
+        ]
+        mocker.patch.object(Path, "iterdir", return_value=entries)
         mock_process_class = mocker.MagicMock()
 
         process_all_files("/some/dir", ["mp4"], mock_process_class)
